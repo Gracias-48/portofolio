@@ -234,7 +234,7 @@ const PROJECTS = [
     images: [
       {
         src: "/projects/transcribenote.png",
-        fallback: "/TranscribeNote.png",
+        fallback: "/projects/transcribenote.png",
         label: "Live Transcriber Interface",
         caption: "100% on-device speech transcription feed with 1-click keynote extraction",
       },
@@ -270,7 +270,7 @@ const PROJECTS = [
     images: [
       {
         src: "/projects/gesture-hud.png",
-        fallback: "/Gesture Control.png",
+        fallback: "/projects/gesture-hud.png",
         label: "Continuous HUD Telemetry",
         caption: "Real-time 21 hand landmarks tracking, 11.9 FPS continuous throughput, and anti-false trigger gate",
       },
@@ -306,19 +306,19 @@ const PROJECTS = [
     images: [
       {
         src: "/projects/stock-bot.png",
-        fallback: "/IDX Stock Analysis.png",
+        fallback: "/projects/stock-bot.png",
         label: "Part 1: Macro & Bull Thesis",
         caption: "Deep-Dive Stock Intelligence: Technicals, News Catalysts & Bull Researcher Upside",
       },
       {
         src: "/projects/stock-bot-2.png",
-        fallback: "/IDX Stock Analysis 2.png",
+        fallback: "/projects/stock-bot-2.png",
         label: "Part 2: Bear Thesis & Risk",
         caption: "Bear Researcher Thesis: Downside Risks, Margin of Safety & Valuation Sensitivity",
       },
       {
         src: "/projects/stock-bot-3.png",
-        fallback: "/IDX Stock Analysis 3.png",
+        fallback: "/projects/stock-bot-3.png",
         label: "Part 3: Trade Plan & Verdict",
         caption: "Trader Execution Plan (Entry, TP, SL) & Portfolio Manager Final 5-Tier Decision",
       },

@@ -33,6 +33,10 @@ venv/
 # Internal design documentation
 DESIGN.md
 
+# Loose / unorganized image drops in root
+/*.png
+/public/*.png
+
 # Editor / OS files
 .DS_Store
 Thumbs.db
