@@ -62,7 +62,7 @@ const PROFILE = {
   focus: ["On-Device Deep Learning", "Spatio-Temporal CV", "Speech ASR"],
   subheadline: "Building Multi-Agent Systems & Automated Data Pipelines",
   status:
-    "Currently seeking AI/ML Engineering or Data Engineering Internship opportunities where I can contribute to impactful, end-to-end engineering challenges.",
+    "Currently seeking AI/ML Engineering or Software Engineering Internship opportunities where I can contribute to impactful, end-to-end engineering challenges.",
 };
 
 const ABOUT_PARAGRAPHS = [
@@ -708,7 +708,7 @@ function Hero({ onEmailClick }) {
               id="hero-status"
               className="gw-rise font-mono text-[12px] uppercase tracking-[0.18em] text-[#7a7a7a] font-medium mb-4"
             >
-              Open to AI/ML & Data Engineering Internships
+              Open to AI/ML & Software Engineering Internships
             </p>
 
             {/* Apple Hero Display: 56px, 600 weight, 1.07 line-height, -0.02em tracking */}
@@ -1275,7 +1275,7 @@ function Contact({ onEmailClick, onCopyEmail }) {
             </span>
           </h2>
           <p className="mx-auto mt-4 max-w-[540px] text-[17px] leading-[1.47] text-[#7a7a7a]">
-            Open to AI/ML Engineering and Data Engineering internships. Direct channels below:
+            Open to AI/ML Engineering and Software Engineering internships. Direct channels below:
           </p>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3.5">

@@ -4,18 +4,18 @@
 [![React](https://img.shields.io/badge/React-19.x-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.x-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
-A high-performance personal engineering portfolio for **Gracias Kumara Winata** (Computer Science / Artificial Intelligence student at BINUS University), showcasing on-device deep learning, spatio-temporal computer vision, speech recognition, and multi-agent systems.
+A personal engineering portfolio for **Gracias Kumara Winata** (Computer Science / Artificial Intelligence student at BINUS University), showcasing on-device deep learning, spatio-temporal computer vision, speech recognition, and software engineering.
 
-Built following the **Apple Pro Editorial Design System** (`DESIGN.md`):
+Built with an editorial aesthetic:
 - **Full-bleed alternating rhythm**: Pure White (`#ffffff`), Apple Parchment (`#f5f5f7`), and Dark Tiles (`#1d1d1f`, `#272729`).
 - **Signature Interactive Blues**: Action Blue (`#0066cc`) pill actions and Sky Link Blue (`#2997ff`) indicators.
-- **Pro typography & contrast**: 56px/40px display headlines with tight tracking and two-tone cobalt gradients.
+- **Pro typography and contrast**: 56px/40px display headlines with tight tracking and two-tone cobalt gradients.
 - **Surface contrast**: 18px rounded utility cards with subtle rings and zero wireframe borders.
-- **Apple elevation product shadow**: Real photographic screenshot depth (`rgba(0, 0, 0, 0.22) 3px 5px 30px`).
+- **Elevation product shadow**: Real photographic screenshot depth (`rgba(0, 0, 0, 0.22) 3px 5px 30px`).
 
 ---
 
-## 🚀 Featured Engineering Projects
+## Featured Engineering Projects
 
 1. **[TranscribeNote](https://github.com/Gracias-48/Real-Time-Audio-Transcription)**
    - *On-Device Speech ASR*: In-browser quantized Whisper model running via Transformers.js (WebGPU / WASM) in a Web Worker.
@@ -31,7 +31,7 @@ Built following the **Apple Pro Editorial Design System** (`DESIGN.md`):
 
 ---
 
-## 🛠️ Stack & Technologies
+## Stack & Technologies
 
 - **Frontend Core**: React 19, Vite, Tailwind CSS v4
 - **Icons**: Lucide React
@@ -40,7 +40,7 @@ Built following the **Apple Pro Editorial Design System** (`DESIGN.md`):
 
 ---
 
-## ⚡ Quick Start
+## Quick Start
 
 ```bash
 # Clone the repository
@@ -66,6 +66,6 @@ npm run preview
 
 ---
 
-## 📄 License
+## License
 
-MIT © [Gracias Kumara Winata](https://github.com/Gracias-48)
+MIT (c) [Gracias Kumara Winata](https://github.com/Gracias-48)
