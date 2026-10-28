@@ -143,12 +143,6 @@ const SKILL_GROUPS = [
     icon: BrainCircuit,
     path: "~/stack/ai-dl-signal",
     title: "AI, Deep Learning & Signal Processing",
-    targetProject: "project-gesture-hud",
-    targetProjectTitle: "Gesture HUD & TranscribeNote",
-    projectLinks: [
-      { id: "project-gesture-hud", label: "Touchless Gesture HUD (TCN / ONNX)" },
-      { id: "project-transcribenote", label: "TranscribeNote (Whisper / VAD)" },
-    ],
     items: [
       { name: "PyTorch", detail: "TCN, BiLSTM, ST-GCN", target: "project-gesture-hud" },
       { name: "ONNX Runtime", detail: "CPU / Web", target: "project-gesture-hud" },
@@ -168,11 +162,6 @@ const SKILL_GROUPS = [
     icon: Server,
     path: "~/stack/web-backend",
     title: "Web & Backend Engineering",
-    targetProject: "project-transcribenote",
-    targetProjectTitle: "TranscribeNote Web App",
-    projectLinks: [
-      { id: "project-transcribenote", label: "TranscribeNote (WebGPU, FastAPI, React 19)" },
-    ],
     items: [
       { name: "Python", detail: "FastAPI, Flask, Streamlit", target: "project-gesture-hud" },
       { name: "TypeScript / React 19", target: "project-transcribenote" },
@@ -188,19 +177,13 @@ const SKILL_GROUPS = [
     icon: Wrench,
     path: "~/stack/devops-hw",
     title: "DevOps & Hardware",
-    targetProject: "project-stock-intel",
-    targetProjectTitle: "IDX Stock Intelligence",
-    projectLinks: [
-      { id: "project-stock-intel", label: "IDX Multi-Agent (GitHub Actions Crons)" },
-      { id: "project-gesture-hud", label: "Gesture HUD (Pytest Benchmarks)" },
-    ],
     items: [
       { name: "GitHub Actions", detail: "CI/CD & Serverless Crons", target: "project-stock-intel" },
       { name: "Pytest", target: "project-gesture-hud" },
       { name: "Vitest", target: "project-transcribenote" },
       { name: "Vercel", target: "project-transcribenote" },
       { name: "Git", target: "project-stock-intel" },
-      { name: "ESP32 / Arduino", detail: "I2S, MQTT", target: "project-gesture-hud" },
+      { name: "ESP32 / Arduino", detail: "I2S, MQTT" },
     ],
   },
 ];
@@ -239,7 +222,7 @@ const PROJECTS = [
         caption: "100% on-device speech transcription feed with 1-click keynote extraction",
       },
     ],
-    frameClass: "aspect-[1024/520]",
+    frameClass: "aspect-[2559/1347]",
     imgClass: "object-cover object-top",
   },
   {
@@ -1171,17 +1154,27 @@ function Projects({ onOpenLightbox }) {
  * ============================================================ */
 
 function SkillPill({ name, detail, target }) {
+  if (!target) {
+    return (
+      <span className="inline-flex items-center gap-2 rounded-full bg-[#f5f5f7] px-3.5 py-1.5 text-[13px] text-[#1d1d1f] border border-black/[0.04] cursor-default select-none">
+        <span className="h-1.5 w-1.5 rounded-full bg-[#7a7a7a] shrink-0" />
+        <span className="font-medium">{name}</span>
+        {detail && <span className="font-mono text-[11px] text-[#7a7a7a]">{detail}</span>}
+      </span>
+    );
+  }
+
   return (
     <button
       type="button"
-      onClick={() => target && scrollToSection(target)}
-      title={target ? `Jump to project implementing ${name}` : undefined}
+      onClick={() => scrollToSection(target)}
+      title={`Jump to project implementing ${name}`}
       className="group inline-flex items-center gap-2 rounded-full bg-[#f5f5f7] px-3.5 py-1.5 text-[13px] text-[#1d1d1f] transition-all duration-150 hover:bg-[#0066cc] hover:text-white active:scale-95 text-left border border-black/[0.04]"
     >
       <span className="h-1.5 w-1.5 rounded-full bg-[#0066cc] transition-colors group-hover:bg-white shrink-0" />
       <span className="font-medium">{name}</span>
       {detail && <span className="font-mono text-[11px] text-[#7a7a7a] group-hover:text-white/80">{detail}</span>}
-      {target && <ArrowUpRight className="h-3 w-3 text-[#7a7a7a] opacity-0 group-hover:opacity-100 group-hover:text-white transition-opacity" />}
+      <ArrowUpRight className="h-3 w-3 text-[#7a7a7a] opacity-0 group-hover:opacity-100 group-hover:text-white transition-opacity" />
     </button>
   );
 }
@@ -1200,12 +1193,12 @@ function Stack() {
             </h2>
           </div>
           <p className="max-w-[440px] text-[15px] leading-[1.5] text-[#7a7a7a]">
-            Click any skill or use the project jump links to inspect where each technology is implemented in real code.
+            Click any skill to directly scroll and inspect where each technology is implemented in real code.
           </p>
         </div>
 
         <div className="mt-12 grid gap-6 lg:grid-cols-3">
-          {SKILL_GROUPS.map(({ id, icon: Icon, path, title, items, projectLinks }) => (
+          {SKILL_GROUPS.map(({ id, icon: Icon, path, title, items }) => (
             <article
               key={id}
               id={`stack-${id}`}
@@ -1227,26 +1220,6 @@ function Stack() {
                     </li>
                   ))}
                 </ul>
-              </div>
-
-              {/* Direct Project Jump Links */}
-              <div className="mt-8 pt-5 border-t border-[#f0f0f0]">
-                <p className="font-mono text-[10.5px] uppercase tracking-wider text-[#7a7a7a] mb-2 font-semibold">
-                  Direct Project Links:
-                </p>
-                <div className="flex flex-col gap-1.5">
-                  {projectLinks.map((pl) => (
-                    <button
-                      key={pl.id}
-                      type="button"
-                      onClick={() => scrollToSection(pl.id)}
-                      className="inline-flex items-center justify-between w-full rounded-lg bg-[#f5f5f7] hover:bg-[#0066cc] hover:text-white px-3.5 py-2 text-[13px] font-medium text-[#1d1d1f] transition-all group/btn"
-                    >
-                      <span className="truncate">{pl.label}</span>
-                      <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform group-hover/btn:translate-x-1" />
-                    </button>
-                  ))}
-                </div>
               </div>
             </article>
           ))}
@@ -1437,12 +1410,11 @@ function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 pt-6 text-[12px] text-[#7a7a7a] sm:flex-row sm:items-center sm:justify-between">
-          <p>© {year} Gracias Kumara Winata. Apple Pro Editorial Architecture.</p>
+        <div className="flex items-center justify-end pt-6">
           <a
             id="footer-back-to-top"
             href="#top"
-            className="font-mono inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.14em] font-medium transition-colors hover:text-[#0066cc]"
+            className="font-mono inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.14em] font-medium text-[#7a7a7a] transition-colors hover:text-[#0066cc]"
           >
             <ArrowUp className="h-3.5 w-3.5" /> Back to top
           </a>

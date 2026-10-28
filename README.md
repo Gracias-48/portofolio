@@ -63,9 +63,3 @@ npm run build
 # Preview production build locally
 npm run preview
 ```
-
----
-
-## License
-
-MIT (c) [Gracias Kumara Winata](https://github.com/Gracias-48)
