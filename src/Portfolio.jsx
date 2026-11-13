@@ -58,6 +58,7 @@ const PROFILE = {
   githubLabel: "github.com/Gracias-48",
   linkedin: "https://www.linkedin.com/in/gracias-kumara-winata/",
   linkedinLabel: "linkedin.com/in/gracias-kumara-winata",
+  photo: "/projects/Photo-cutout.png",
   role: "Computer Science (AI) Student @ BINUS University",
   focus: ["On-Device Deep Learning", "Spatio-Temporal CV", "Speech ASR"],
   subheadline: "Building Multi-Agent Systems & Automated Data Pipelines",
@@ -682,14 +683,39 @@ function SystemTelemetryCard() {
 
 function Hero({ onEmailClick }) {
   return (
-    <section id="top" className="relative overflow-hidden bg-white text-[#1d1d1f] pt-[44px]">
-      <div className="relative mx-auto flex min-h-[92svh] max-w-[1020px] flex-col justify-center px-5 pb-16 pt-16 sm:px-6 lg:pt-20">
-        <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-12">
-          {/* Copy */}
-          <div>
+    <section id="top" className="relative overflow-hidden bg-gradient-to-b from-[#f5f5f7]/60 via-white to-white text-[#1d1d1f] pt-[44px]">
+      {/* Subtle architectural contour wave lines inspired by the reference hero */}
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 1440 320"
+        fill="none"
+        preserveAspectRatio="none"
+        className="pointer-events-none absolute inset-x-0 bottom-[105px] h-[220px] w-full opacity-55"
+      >
+        <path
+          d="M-60 260 C 260 150, 560 310, 920 210 C 1180 140, 1340 60, 1500 90"
+          stroke="#d2d2d7"
+          strokeWidth="1.2"
+        />
+        <path
+          d="M-60 280 C 280 175, 580 325, 940 228 C 1200 158, 1350 82, 1500 112"
+          stroke="#e5e5ea"
+          strokeWidth="1.2"
+        />
+        <path
+          d="M-60 300 C 300 200, 600 340, 960 246 C 1220 176, 1360 104, 1500 134"
+          stroke="#f0f0f5"
+          strokeWidth="1.2"
+        />
+      </svg>
+
+      <div className="relative mx-auto flex min-h-[92svh] max-w-[1060px] flex-col justify-between px-5 pb-12 pt-10 sm:px-6 lg:pt-14">
+        <div className="grid items-end gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-10">
+          {/* Left Copy Column */}
+          <div className="pb-4 lg:pb-14 pt-4">
             <p
               id="hero-status"
-              className="gw-rise font-mono text-[12px] uppercase tracking-[0.18em] text-[#7a7a7a] font-medium mb-4"
+              className="gw-rise font-mono text-[12px] uppercase tracking-[0.18em] text-[#0066cc] font-semibold mb-4"
             >
               Open to AI/ML & Software Engineering Internships
             </p>
@@ -761,12 +787,27 @@ function Hero({ onEmailClick }) {
             </div>
           </div>
 
-          {/* System Telemetry card */}
-          <SystemTelemetryCard />
+          {/* Right Cutout Portrait Column — anchored flush to the bottom divider */}
+          <div className="relative flex justify-center lg:justify-end self-end">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 h-[80%] w-[85%] rounded-full bg-gradient-to-tr from-[#0066cc]/[0.06] via-[#f5f5f7]/80 to-transparent blur-2xl"
+            />
+            <img
+              src={PROFILE.photo}
+              alt="Gracias Kumara Winata"
+              width={1082}
+              height={1264}
+              fetchPriority="high"
+              decoding="async"
+              className="gw-rise relative z-10 block w-full max-w-[320px] sm:max-w-[380px] lg:max-w-[440px] aspect-[1082/1264] h-auto object-contain object-bottom select-none drop-shadow-[0_18px_38px_rgba(0,0,0,0.12)]"
+              style={{ animationDelay: "140ms" }}
+            />
+          </div>
         </div>
 
-        {/* Telemetry bar */}
-        <dl className="gw-rise mt-16 grid grid-cols-2 border-t border-[#f0f0f0] pt-8 md:grid-cols-4" style={{ animationDelay: "340ms" }}>
+        {/* Telemetry bar — sits flush below the portrait cutout */}
+        <dl className="gw-rise relative z-20 grid grid-cols-2 border-t border-[#e5e5ea] bg-white/90 backdrop-blur-sm pt-7 md:grid-cols-4" style={{ animationDelay: "340ms" }}>
           {HERO_STATS.map((s, i) => (
             <div
               key={s.k}
@@ -1590,6 +1631,10 @@ export default function Portfolio() {
     }
   };
 
+  const openLightbox = (images, initialIndex, title) => {
+    setLightbox({ open: true, images, initialIndex, title });
+  };
+
   return (
     <div className="gw-root min-h-screen bg-white text-[#1d1d1f]">
       <style>{STYLES}</style>
@@ -1605,11 +1650,7 @@ export default function Portfolio() {
       <main>
         <Hero onEmailClick={handleEmailAction} />
         <About onEmailClick={handleEmailAction} />
-        <Projects
-          onOpenLightbox={(images, initialIndex, title) =>
-            setLightbox({ open: true, images, initialIndex, title })
-          }
-        />
+        <Projects onOpenLightbox={openLightbox} />
         <Stack />
         <Contact onEmailClick={handleEmailAction} onCopyEmail={handleCopyEmail} />
       </main>
