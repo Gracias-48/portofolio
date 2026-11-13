@@ -60,46 +60,46 @@ const PROFILE = {
   linkedinLabel: "linkedin.com/in/gracias-kumara-winata",
   photo: "/projects/Photo-cutout.png",
   role: "Computer Science (AI) Student @ BINUS University",
-  focus: ["On-Device Deep Learning", "Spatio-Temporal CV", "Speech ASR"],
-  subheadline: "Building Multi-Agent Systems & Automated Data Pipelines",
+  focus: ["Multi-Agent & LLM Systems", "Cloud & Serverless Backends", "Deep Learning (CV & ASR)"],
+  subheadline: "Building Multi-Agent Systems, Cloud Backends & Real-Time ML Pipelines",
   status:
     "Currently seeking AI/ML Engineering or Software Engineering Internship opportunities where I can contribute to impactful, end-to-end engineering challenges.",
 };
 
 const ABOUT_PARAGRAPHS = [
-  "I am an undergraduate Computer Science student at BINUS University specializing in Artificial Intelligence, passionate about bridging the gap between theoretical machine learning and low-latency, real-world production systems.",
-  "My technical work centers on deploying 100% on-device deep learning models, architecting spatio-temporal computer vision & speech recognition pipelines, and building zero-maintenance serverless backends.",
-  "Rather than relying solely on high-level black-box APIs, I enjoy engineering core pipelines from the ground up: whether implementing Slaney Log-Mel STFT feature extractors in pure NumPy, optimizing sub-millisecond ONNX models on CPU, or running quantized Whisper models in-browser via WebGPU/WASM.",
+  "I am an undergraduate Computer Science student at BINUS University specializing in Artificial Intelligence, passionate about bridging the gap between machine learning research and scalable, low-latency production software.",
+  "My technical work spans end-to-end AI and software engineering: orchestrating multi-agent LLM workflows and cloud-native serverless backends, alongside real-time spatio-temporal computer vision and streaming speech recognition systems.",
+  "Rather than relying solely on high-level black-box wrappers, I enjoy engineering core architectures from the ground up: whether orchestrating 7-node LangGraph state machines over Cloudflare Workers and GitHub Actions, streaming FastAPI + WebSocket inference services, or optimizing sub-millisecond ONNX and Whisper pipelines.",
 ];
 
 const PRINCIPLES = [
   {
     icon: Cpu,
-    title: "On-device first",
-    body: "Inference where the data lives: CPU, WebGPU, WASM. Zero cloud round-trips.",
+    title: "Full-stack AI systems",
+    body: "From cloud-native LangGraph agents and FastAPI services to low-latency browser and CPU inference.",
   },
   {
     icon: Wrench,
     title: "Ground-up pipelines",
-    body: "STFT, Log-Mel, ring buffers and gates: built, tested, understood.",
+    body: "State graphs, feature extractors, ring buffers, and validation gates: built, tested, and understood.",
   },
   {
     icon: Server,
-    title: "Zero-maintenance backends",
-    body: "Serverless crons and workers that run reliably without babysitting.",
+    title: "Cloud & serverless scale",
+    body: "Event-driven Cloudflare Workers, scheduled crons, and resilient APIs engineered for production reliability.",
   },
   {
     icon: Activity,
     title: "Measured, not guessed",
-    body: "Latency, RTF, WER and FPS tracked as first-class engineering outputs.",
+    body: "Latency, throughput, RTF, and unit-tested schemas tracked as first-class engineering outputs.",
   },
 ];
 
 const HERO_STATS = [
-  { k: "INFERENCE", v: "0.7 ms", sub: "ONNX on CPU" },
-  { k: "ASR PRIVACY", v: "100%", sub: "client-side" },
   { k: "AGENT GRAPH", v: "7-node", sub: "LangGraph" },
-  { k: "SENTRY CRON", v: "15 min", sub: "GitHub Actions" },
+  { k: "SENTRY CRON", v: "15 min", sub: "Cloud / Actions" },
+  { k: "ASR STREAM", v: "~800 ms", sub: "FastAPI / WebGPU" },
+  { k: "CV INFERENCE", v: "0.7 ms", sub: "ONNX Runtime" },
 ];
 
 const TELEMETRY_PROJECTS = [
@@ -119,22 +119,22 @@ const TELEMETRY_PROJECTS = [
     badge: "Speech Recognition",
     title: "TranscribeNote ASR",
     model: "Quantized Whisper + Silero VAD",
-    runtime: "WebGPU / WASM (In-Browser)",
+    runtime: "FastAPI WebSockets + WebGPU",
     latency: "800 ms partials",
     fps: "0.38x RTF",
     keypoints: "80-ch Log-Mel",
-    highlight: "100% private on-device audio streaming with pure NumPy front-end",
+    highlight: "Real-time streaming ASR with FastAPI backend & pure NumPy front-end",
   },
   {
     id: "stock-intel",
     badge: "Multi-Agent System",
     title: "IDX Stock Intelligence",
     model: "LangGraph 7-Node StateGraph",
-    runtime: "GitHub Actions + Workers",
+    runtime: "Cloudflare Workers + Actions",
     latency: "15 min cron",
     fps: "22 unit tests",
     keypoints: "Bull vs Bear",
-    highlight: "Triple-Engine serverless pipeline with real-time Telegram delivery",
+    highlight: "Triple-Engine cloud serverless pipeline with real-time Telegram delivery",
   },
 ];
 
@@ -200,18 +200,18 @@ const PROJECTS = [
     accentBlue: "text-[#2997ff]",
     dividerColor: "border-white/15",
     icon: Mic,
-    tag: "ON-DEVICE SPEECH ASR",
+    tag: "REAL-TIME SPEECH ASR & FULL-STACK STREAMING",
     title: "TranscribeNote",
     subtitle: "Real-Time Lecture Transcriber & Click-to-Highlight Notes",
     description:
-      "A privacy-first lecture assistant where audio never leaves the machine. Microphone audio at 16 kHz is segmented by Silero VAD and pseudo-streamed into a quantized Whisper model running in-browser via Transformers.js (WebGPU / WASM) inside a Web Worker, with an optional local FastAPI + Faster-Whisper CUDA backend over WebSockets fed by a pure-NumPy 80-channel Slaney Log-Mel front-end.",
-    pipeline: ["Mic 16 kHz", "Silero VAD", "Web Worker", "Whisper (WebGPU)", "Hallucination Filter", "Key Notes"],
+      "A full-stack real-time lecture transcription and note-synthesis platform. Microphone audio at 16 kHz is segmented by Silero VAD and streamed over WebSockets to a FastAPI + Faster-Whisper backend powered by a custom NumPy 80-channel Slaney Log-Mel front-end, alongside a client-side WebGPU / WASM Whisper worker for low-latency browser execution.",
+    pipeline: ["Mic 16 kHz", "Silero VAD", "FastAPI / WebWorker", "Whisper ASR", "Hallucination Filter", "Key Notes"],
     metrics: [
-      { v: "100%", l: "on-device inference" },
+      { v: "0.38x", l: "real-time factor (RTF)" },
       { v: "~800 ms", l: "partial decode ticks" },
       { v: "80-ch", l: "Log-Mel in NumPy" },
     ],
-    tags: ["React 19", "TypeScript", "Transformers.js", "WebGPU/WASM", "Silero VAD", "FastAPI", "Faster-Whisper", "Vercel"],
+    tags: ["React 19", "TypeScript", "FastAPI", "WebSockets", "Faster-Whisper", "Transformers.js", "Silero VAD", "Vercel"],
     repo: "https://github.com/Gracias-48/Real-Time-Audio-Transcription",
     repoLabel: "gracias-48/real-time-audio-transcription",
     image: "/projects/transcribenote.png",
@@ -220,7 +220,7 @@ const PROJECTS = [
         src: "/projects/transcribenote.png",
         fallback: "/projects/transcribenote.png",
         label: "Live Transcriber Interface",
-        caption: "100% on-device speech transcription feed with 1-click keynote extraction",
+        caption: "Real-time streaming speech transcription feed with 1-click keynote extraction",
       },
     ],
     frameClass: "aspect-[2559/1347]",
@@ -272,11 +272,11 @@ const PROJECTS = [
     accentBlue: "text-[#2997ff]",
     dividerColor: "border-white/15",
     icon: Workflow,
-    tag: "MULTI-AGENT SYSTEMS & SERVERLESS",
+    tag: "CLOUD, SERVERLESS & MULTI-AGENT SYSTEMS",
     title: "IDX Stock Intelligence",
     subtitle: "Triple-Engine Multi-Agent Market Analysis System",
     description:
-      "A zero-maintenance market intelligence system for the Indonesia Stock Exchange. GitHub Actions crons run a morning macro radar and a 15-minute price sentry; a Telegram /analyze command triggers a Cloudflare Worker that dispatches a LangGraph 7-node pipeline: four parallel analysts, Bull vs Bear debate, a Pydantic trade execution plan, and a 5-tier portfolio manager verdict delivered back to Telegram.",
+      "A cloud-native, event-driven market intelligence backend for the Indonesia Stock Exchange. Scheduled GitHub Actions workflows run a morning macro radar and a 15-minute price sentry, while a serverless Cloudflare Worker webhook dispatches an asynchronous 7-node LangGraph pipeline: four parallel domain analysts, a Bull vs Bear researcher debate, a Pydantic-validated trade execution plan, and a 5-tier portfolio manager verdict delivered via the Telegram Bot API.",
     pipeline: ["Telegram /analyze", "Cloudflare Worker", "GitHub Actions", "LangGraph (7 nodes)", "Bull vs Bear", "PM Verdict"],
     metrics: [
       { v: "3", l: "autonomous engines" },
@@ -602,7 +602,7 @@ function SystemTelemetryCard() {
             </span>
           </div>
           <span className="rounded-full bg-[#f5f5f7] px-2.5 py-0.5 text-[11px] font-medium text-[#1d1d1f]">
-            100% On-Device
+            End-to-End Systems
           </span>
         </div>
 
@@ -1165,11 +1165,11 @@ function Projects({ onOpenLightbox }) {
                 02 / FEATURED PROJECTS
               </p>
               <h2 id="projects-heading" className="text-[32px] font-semibold leading-[1.07] tracking-[-0.02em] sm:text-[40px] text-white">
-                Systems that run where the data lives
+                End-to-end systems built for production
               </h2>
             </div>
             <div className="font-mono flex flex-wrap gap-2 text-[11.5px] text-[#cccccc]">
-              {["100% on-device inference", "sub-ms ONNX on CPU", "autonomous pipelines"].map((label) => (
+              {["cloud & serverless orchestration", "multi-agent LLM workflows", "low-latency ML inference"].map((label) => (
                 <span
                   key={label}
                   className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-white"
@@ -1385,7 +1385,7 @@ function Footer() {
               Gracias Kumara Winata
             </a>
             <p className="mt-3.5 max-w-[260px] text-[12.5px] leading-[1.6] text-[#7a7a7a]">
-              Computer Science (AI) student at BINUS University building on-device deep learning, vision and speech pipelines.
+              Computer Science (AI) student at BINUS University building multi-agent LLM systems, cloud backends, and real-time deep learning pipelines.
             </p>
           </div>
 
