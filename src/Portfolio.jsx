@@ -99,7 +99,7 @@ const HERO_STATS = [
   { k: "AGENT GRAPH", v: "7-node", sub: "LangGraph" },
   { k: "SENTRY CRON", v: "15 min", sub: "Cloud / Actions" },
   { k: "ASR STREAM", v: "~800 ms", sub: "FastAPI / WebGPU" },
-  { k: "CV INFERENCE", v: "0.7 ms", sub: "ONNX Runtime" },
+  { k: "CV INFERENCE", v: "0.31 ms", sub: "99.4% TCN ONNX" },
 ];
 
 const TELEMETRY_PROJECTS = [
@@ -107,12 +107,12 @@ const TELEMETRY_PROJECTS = [
     id: "gesture-hud",
     badge: "Computer Vision",
     title: "Touchless Gesture HUD",
-    model: "Dilated TCN (Causal Conv1D)",
+    model: "Dilated TCN / BiLSTM / ST-GCN",
     runtime: "ONNX Runtime (CPU)",
-    latency: "0.7 ms",
-    fps: "11.9 FPS",
-    keypoints: "21 landmarks",
-    highlight: "Sub-millisecond inference on standard laptop CPU without GPU",
+    latency: "0.31 ms",
+    fps: "30 FPS",
+    keypoints: "9-class HaGRID",
+    highlight: "AirTouch Studio 30 FPS Virtual Mouse trained on 24,849 HaGRID v2 sequences",
   },
   {
     id: "transcribenote",
@@ -238,14 +238,14 @@ const PROJECTS = [
     icon: Hand,
     tag: "SPATIO-TEMPORAL COMPUTER VISION",
     title: "Touchless Gesture HUD",
-    subtitle: "Continuous Spatio-Temporal Deep Learning for Touchless HCI",
+    subtitle: "AirTouch Studio — Continuous 30 FPS Virtual Mouse & HCI Workstation",
     description:
-      "Touchless computer control from a standard webcam. MediaPipe tracks 21 hand landmarks, resampled to 12 FPS into a 32-frame ring buffer; 131-dim dual-stream features feed hot-swappable TCN, BiLSTM-Attention and ST-GCN models exported to ONNX for sub-millisecond CPU inference. A multi-stage motion, confidence, and consistency gate prevents false triggers before PyAutoGUI injects OS actions.",
-    pipeline: ["Webcam 30 FPS", "MediaPipe 21 kp", "Ring Buffer T=32", "ONNX (TCN)", "Anti-False Gate", "OS Action"],
+      "Touchless desktop and cursor control from a standard webcam. MediaPipe captures 21 hand landmarks at 30 FPS into a 16-frame (~0.53 s) sliding ring buffer; 131-dim dual-stream features and 10-channel graph tensors feed hot-swappable TCN (99.44%, 0.31 ms), BiLSTM-Attention (99.50%, 1.44 ms), and ST-GCN (99.08%, 2.94 ms) models trained on 24,849 user-disjoint HaGRID v2 sequences and exported to ONNX Runtime for CPU execution. Multi-stage confidence/consistency gating and edge-triggered latching drive PyAutoGUI Virtual Mouse actions across the AirTouch Studio HUD and standalone floating controller.",
+    pipeline: ["Webcam 30 FPS", "MediaPipe 21 kp", "Ring Buffer T=16", "ONNX (TCN 0.31ms)", "Consistency Gate", "Virtual Mouse OS"],
     metrics: [
-      { v: "0.7 ms", l: "CPU inference" },
-      { v: "8-class", l: "softmax gestures" },
-      { v: "3", l: "hot-swap models" },
+      { v: "0.31 ms", l: "TCN CPU latency" },
+      { v: "99.5%", l: "HaGRID v2 accuracy" },
+      { v: "9-class", l: "30 FPS virtual mouse" },
     ],
     tags: ["PyTorch", "ONNX Runtime", "MediaPipe", "OpenCV", "Streamlit", "PyAutoGUI", "Pytest"],
     repo: "https://github.com/Gracias-48/Gesture-Control",
@@ -255,8 +255,8 @@ const PROJECTS = [
       {
         src: "/projects/gesture-hud.png",
         fallback: "/projects/gesture-hud.png",
-        label: "Continuous HUD Telemetry",
-        caption: "Real-time 21 hand landmarks tracking, 11.9 FPS continuous throughput, and anti-false trigger gate",
+        label: "HUD & Live Telemetry",
+        caption: "Real-time 21 hand landmarks tracking, multi-architecture ONNX inference, and Virtual Mouse gating",
       },
     ],
     frameClass: "aspect-[1024/520]",

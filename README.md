@@ -22,8 +22,8 @@ Built with an editorial aesthetic:
    - Microphone segmented with Silero VAD, custom NumPy 80-channel Slaney Log-Mel front-end, and 1-click keynote extraction.
 
 2. **[Touchless Gesture HUD](https://github.com/Gracias-48/Gesture-Control)**
-   - *Spatio-Temporal Computer Vision*: Real-time webcam tracking of 21 MediaPipe hand landmarks.
-   - 32-frame ring buffer feeding Dilated TCN / BiLSTM models exported to ONNX Runtime with sub-millisecond CPU inference (0.7 ms).
+   - *Spatio-Temporal Computer Vision*: AirTouch Studio 30 FPS Virtual Mouse & standalone floating controller tracking 21 MediaPipe hand landmarks.
+   - 16-frame (`0.53 s`) ring buffer over 9 HaGRID v2 classes (`24,849` sequences) feeding Causal Dilated TCN (`99.44%`, `0.31 ms`), BiLSTM + Attention (`99.50%`), and ST-GCN (`99.08%`) exported to ONNX Runtime on CPU.
 
 3. **[IDX Stock Intelligence](https://github.com/Gracias-48/Stock-Analysis)**
    - *Cloud, Serverless & Multi-Agent Systems*: Event-driven market intelligence backend for the Indonesia Stock Exchange.
