@@ -18,8 +18,8 @@ Built with an editorial aesthetic:
 ## Featured Engineering Projects
 
 1. **[TranscribeNote](https://github.com/Gracias-48/Real-Time-Audio-Transcription)**
-   - *Real-Time Speech ASR & Full-Stack Streaming*: Full-stack lecture transcription platform streaming 16 kHz audio over WebSockets to a FastAPI + Faster-Whisper backend, alongside an in-browser Transformers.js (WebGPU / WASM) worker.
-   - Microphone segmented with Silero VAD, custom NumPy 80-channel Slaney Log-Mel front-end, and 1-click keynote extraction.
+   - *Real-Time Speech ASR & Full-Stack Streaming*: Bilingual (`ID` / `EN`) Live Studio workbench supporting mic, browser tab/system audio, and dual-channel capture streaming to a FastAPI + Faster-Whisper WebSocket backend or Transformers.js v4 (WebGPU / WASM) worker (`0.37x` RTF).
+   - Includes Silero VAD, custom NumPy 80-channel Slaney Log-Mel front-end, IndexedDB audio replay, 4 deterministic study templates, Markdown/SRT/PDF export, and a NIST-weighted WER/CER evaluation suite.
 
 2. **[Touchless Gesture HUD](https://github.com/Gracias-48/Gesture-Control)**
    - *Spatio-Temporal Computer Vision*: AirTouch Studio 30 FPS Virtual Mouse & standalone floating controller tracking 21 MediaPipe hand landmarks.
