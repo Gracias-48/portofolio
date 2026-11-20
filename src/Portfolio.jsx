@@ -45,6 +45,8 @@ import {
   Gauge,
   ChevronLeft,
   ChevronRight,
+  Pause,
+  Play,
 } from "lucide-react";
 
 /* ============================================================
@@ -319,6 +321,34 @@ const NAV_LINKS = [
   { id: "contact", label: "Contact" },
 ];
 
+const NAV_IDS = NAV_LINKS.map((l) => l.id);
+
+// Floating glass chips orbiting the hero portrait (pointer-parallax depth via --d)
+const HERO_CHIPS = [
+  { icon: BrainCircuit, label: "LangGraph", value: "7-node agents", pos: "-left-10 top-[22%]", d: "22px", delay: "650ms" },
+  { icon: Cpu, label: "ONNX Runtime", value: "0.31 ms on CPU", pos: "-right-6 top-[4%]", d: "-18px", delay: "800ms" },
+  { icon: Mic, label: "Whisper ASR", value: "0.37x real-time", pos: "-right-10 bottom-[24%]", d: "30px", delay: "950ms" },
+];
+
+const TECH_MARQUEE = [
+  "PyTorch",
+  "ONNX Runtime",
+  "LangGraph",
+  "FastAPI",
+  "Cloudflare Workers",
+  "GitHub Actions",
+  "React 19",
+  "TypeScript",
+  "MediaPipe",
+  "Faster-Whisper",
+  "Transformers.js",
+  "WebGPU",
+  "Pydantic",
+  "OpenCV",
+  "Streamlit",
+  "Vercel",
+];
+
 /* ============================================================
  * STYLES
  * ============================================================ */
@@ -358,8 +388,12 @@ html {
   50% { transform: scale(1.4); opacity: 0.2; }
   100% { transform: scale(0.95); opacity: 0.9; }
 }
-.apple-pulse {
-  animation: apple-pulse-ring 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+.gw-root :where(a, button):focus-visible {
+  outline: 2px solid #0066cc;
+  outline-offset: 3px;
+}
+.gw-root :where(header, .bg-\\[\\#1d1d1f\\], .bg-\\[\\#272729\\]) :where(a, button):focus-visible {
+  outline-color: #2997ff;
 }
 
 @keyframes gw-highlight-jump {
@@ -371,23 +405,198 @@ html {
   animation: gw-highlight-jump 1.4s cubic-bezier(0, 0, 0.2, 1) 2;
 }
 
+/* ------------------------------------------------------------
+ * MOTION SYSTEM
+ * Every spatial animation is opted in via prefers-reduced-motion:
+ * no-preference; static final states are the default.
+ * Scroll-driven effects are decorative progressive enhancement.
+ * ------------------------------------------------------------ */
 @keyframes gw-rise {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: none; }
 }
-.gw-rise {
-  animation: gw-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+@keyframes gw-word {
+  from { opacity: 0; transform: translateY(0.45em); filter: blur(10px); }
 }
-
+@keyframes gw-pop {
+  from { opacity: 0; transform: translateY(12px) scale(0.86); }
+}
+@keyframes gw-draw {
+  from { stroke-dashoffset: 1; }
+}
+@keyframes gw-marquee {
+  to { transform: translateX(-50%); }
+}
 @keyframes gw-reveal {
   from { opacity: 0; transform: translateY(24px); }
 }
+@keyframes gw-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes gw-lift {
+  to { transform: translateY(-56px); opacity: 0.2; }
+}
+@keyframes gw-sink {
+  to { transform: translateY(64px) scale(0.96); }
+}
+@keyframes gw-shot-in {
+  from { transform: perspective(1400px) rotateX(16deg) translateY(48px) scale(0.9); opacity: 0.25; }
+}
+@keyframes gw-node-in {
+  from { opacity: 0; transform: translateX(-12px) scale(0.9); }
+}
+@keyframes gw-pill-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.85); }
+}
+@keyframes gw-drift {
+  from { transform: translateY(90px); }
+  to { transform: translateY(-90px); }
+}
+@keyframes gw-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: 0% 0; }
+}
+
+/* Static defaults (final states) */
+.gw-word { display: inline-block; }
+.gw-draw-path { stroke-dasharray: 1; stroke-dashoffset: 0; }
+.gw-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, #0066cc, #2997ff 60%, #5ac8fa);
+  pointer-events: none;
+}
+.gw-shimmer {
+  background-image: linear-gradient(90deg, #0066cc 0%, #2997ff 30%, #5ac8fa 50%, #2997ff 70%, #0066cc 100%);
+  background-size: 220% 100%;
+  background-position: 0% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.gw-hero-grid {
+  background-image: radial-gradient(rgba(0, 0, 0, 0.085) 1px, transparent 1px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse 65% 55% at 72% 38%, #000 25%, transparent 75%);
+  mask-image: radial-gradient(ellipse 65% 55% at 72% 38%, #000 25%, transparent 75%);
+}
+.gw-hero-spot {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  background: radial-gradient(560px circle at var(--mx, 70%) var(--my, 40%), rgba(0, 102, 204, 0.09), transparent 62%);
+}
+.gw-hero:hover .gw-hero-spot { opacity: 1; }
+.gw-spot { position: relative; isolation: isolate; }
+.gw-spot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), rgba(0, 102, 204, 0.1), transparent 60%);
+}
+.gw-spot-dark::before {
+  background: radial-gradient(460px circle at var(--mx, 50%) var(--my, 50%), rgba(41, 151, 255, 0.22), transparent 60%);
+}
+.gw-spot:hover::before { opacity: 1; }
+@media (hover: none) {
+  .gw-hero-spot, .gw-spot::before { display: none; }
+}
+.gw-watermark {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--wm, rgba(0, 0, 0, 0.07));
+}
+.gw-marquee-mask {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.gw-pipe .gw-arrow { transition: color 0.3s ease; }
+.gw-pipe:hover .gw-arrow { color: #2997ff; }
+[data-magnetic] {
+  transition: translate 0.45s cubic-bezier(0.2, 0.7, 0.2, 1), scale 0.15s ease, background-color 0.2s ease,
+    box-shadow 0.2s ease, color 0.2s ease;
+}
+
 @media (prefers-reduced-motion: no-preference) {
+  .apple-pulse { animation: apple-pulse-ring 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+  .gw-rise { animation: gw-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .gw-word {
+    animation: gw-word 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: calc(80ms + var(--i, 0) * 110ms);
+  }
+  .gw-pop { animation: gw-pop 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+  .gw-draw { animation: gw-draw 2.8s cubic-bezier(0.65, 0, 0.35, 1) both; }
+  .gw-depth {
+    translate: calc(var(--px, 0) * var(--d, 10px)) calc(var(--py, 0) * var(--d, 10px));
+    transition: translate 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .gw-marquee-track { animation: gw-marquee 40s linear infinite; }
+  .gw-marquee-mask:hover .gw-marquee-track,
+  .gw-marquee-mask:focus-within .gw-marquee-track,
+  .gw-marquee-track.is-paused { animation-play-state: paused; }
+
+  @supports ((animation-timeline: scroll()) and (animation-range: 0% 100%)) {
+    .gw-progress {
+      animation: gw-progress auto linear both;
+      animation-timeline: scroll(root);
+    }
+    .gw-lift {
+      animation: gw-lift auto linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0px 85vh;
+    }
+    .gw-sink {
+      animation: gw-sink auto linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0px 100vh;
+    }
+  }
+
   @supports ((animation-timeline: view()) and (animation-range: entry)) {
     .reveal {
       animation: gw-reveal auto cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
       animation-timeline: view();
       animation-range: entry 0% entry 70%;
+    }
+    .reveal.gw-stagger {
+      animation-range: entry calc(var(--i, 0) * 9%) entry calc(65% + var(--i, 0) * 9%);
+    }
+    .gw-shot {
+      animation: gw-shot-in auto cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+      animation-timeline: view();
+      animation-range: entry 0% cover 42%;
+    }
+    .gw-node {
+      animation: gw-node-in auto cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+      animation-timeline: view();
+      animation-range: cover calc(4% + var(--i, 0) * 4%) cover calc(20% + var(--i, 0) * 5%);
+    }
+    .gw-pill-in {
+      animation: gw-pill-in auto cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+      animation-timeline: view();
+      animation-range: cover calc(var(--i, 0) * 1.5%) cover calc(14% + var(--i, 0) * 1.5%);
+    }
+    .gw-watermark {
+      animation: gw-drift auto linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+    .gw-shimmer {
+      animation: gw-shimmer auto linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 55%;
     }
   }
   @supports not ((animation-timeline: view()) and (animation-range: entry)) {
@@ -395,6 +604,7 @@ html {
       opacity: 0;
       transform: translateY(24px);
       transition: opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+      transition-delay: calc(var(--i, 0) * 90ms);
     }
     .reveal.is-in {
       opacity: 1;
@@ -402,8 +612,16 @@ html {
     }
   }
 }
+
+/* Reduced motion: marquee becomes a static wrapped list (no pause control needed) */
 @media (prefers-reduced-motion: reduce) {
-  .gw-rise { animation: none !important; }
+  .gw-hero-spot,
+  .gw-spot::before { transition: none !important; }
+  .gw-marquee-track { width: auto; }
+  .gw-marquee-track > ul { flex-wrap: wrap; row-gap: 10px; }
+  .gw-marquee-track > ul[aria-hidden="true"],
+  .gw-marquee-btn { display: none; }
+  .gw-marquee-mask { -webkit-mask-image: none; mask-image: none; }
 }
 `;
 
@@ -468,6 +686,131 @@ function useRevealFallback() {
   }, []);
 }
 
+/**
+ * Pointer-driven micro-interactions (fine pointers only):
+ * - .gw-spot cards: cursor-following glow (opacity only, kept for reduced motion)
+ * - [data-magnetic] buttons: gentle magnetic pull (disabled for reduced motion)
+ */
+function usePointerEffects() {
+  useEffect(() => {
+    const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (!fine.matches) return;
+
+    const onMove = (e) => {
+      const target = e.target;
+      if (!(target instanceof Element)) return;
+      const spot = target.closest(".gw-spot");
+      if (spot) {
+        const r = spot.getBoundingClientRect();
+        spot.style.setProperty("--mx", `${e.clientX - r.left}px`);
+        spot.style.setProperty("--my", `${e.clientY - r.top}px`);
+      }
+      if (reduce.matches) return;
+      const mag = target.closest("[data-magnetic]");
+      if (mag) {
+        const r = mag.getBoundingClientRect();
+        const x = (e.clientX - (r.left + r.width / 2)) * 0.3;
+        const y = (e.clientY - (r.top + r.height / 2)) * 0.4;
+        mag.style.translate = `${x.toFixed(1)}px ${y.toFixed(1)}px`;
+      }
+    };
+    const onOut = (e) => {
+      const target = e.target;
+      if (!(target instanceof Element)) return;
+      const mag = target.closest("[data-magnetic]");
+      if (mag && !(e.relatedTarget instanceof Node && mag.contains(e.relatedTarget))) {
+        mag.style.translate = "";
+      }
+    };
+
+    document.addEventListener("pointermove", onMove, { passive: true });
+    document.addEventListener("pointerout", onOut, { passive: true });
+    return () => {
+      document.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerout", onOut);
+    };
+  }, []);
+}
+
+/** Highlights the nav link of the section currently crossing the viewport middle. */
+function useScrollSpy(ids) {
+  const [active, setActive] = useState("");
+  const key = ids.join("|");
+  useEffect(() => {
+    const els = key
+      .split("|")
+      .map((id) => document.getElementById(id))
+      .filter(Boolean);
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        });
+      },
+      { rootMargin: "-45% 0px -50% 0px" }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [key]);
+  return active;
+}
+
+/**
+ * Counts the numeric part of a metric (e.g. "~800 ms", "0.31 ms", "99.5%") up from zero
+ * the first time it scrolls into view. Screen readers always get the final value.
+ */
+function CountUp({ value, className = "" }) {
+  const ref = useRef(null);
+  const [display, setDisplay] = useState(value);
+
+  useEffect(() => {
+    const match = /^([^\d]*)(\d+(?:\.\d+)?)(.*)$/.exec(value);
+    const el = ref.current;
+    if (!match || !el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setDisplay(value);
+      return undefined;
+    }
+    const [, pre, num, post] = match;
+    const target = parseFloat(num);
+    const decimals = (num.split(".")[1] || "").length;
+    const format = (n) => `${pre}${n.toFixed(decimals)}${post}`;
+    let raf = 0;
+    let started = false;
+
+    setDisplay(format(0));
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || started) return;
+        started = true;
+        io.disconnect();
+        const t0 = performance.now();
+        const duration = 1400;
+        const tick = (now) => {
+          const p = Math.min(1, (now - t0) / duration);
+          const eased = 1 - Math.pow(1 - p, 4);
+          setDisplay(p < 1 ? format(target * eased) : value);
+          if (p < 1) raf = requestAnimationFrame(tick);
+        };
+        raf = requestAnimationFrame(tick);
+      },
+      { threshold: 0.6 }
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(raf);
+    };
+  }, [value]);
+
+  return (
+    <span ref={ref} className={`tabular-nums ${className}`}>
+      <span aria-hidden="true">{display}</span>
+      <span className="sr-only">{value}</span>
+    </span>
+  );
+}
+
 /* ============================================================
  * ICONS
  * ============================================================ */
@@ -494,9 +837,12 @@ function LinkedinIcon({ className = "h-4 w-4" }) {
 
 function Nav({ onEmailClick }) {
   const [open, setOpen] = useState(false);
+  const active = useScrollSpy(NAV_IDS);
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 h-[44px] border-b border-white/10 bg-black/80 backdrop-blur-[20px] backdrop-saturate-180 transition-colors">
+      {/* Scroll progress hairline (CSS scroll-driven, decorative) */}
+      <div aria-hidden="true" className="gw-progress" />
       <nav className="mx-auto flex h-full max-w-[1020px] items-center justify-between px-5 sm:px-6" aria-label="Primary">
         <a href="#top" id="nav-logo" className="flex items-center gap-2 text-[13px] font-semibold tracking-tight text-white">
           <span className="grid h-6 w-6 place-items-center rounded-sm bg-white text-[11px] font-bold text-black">
@@ -511,7 +857,10 @@ function Nav({ onEmailClick }) {
               <a
                 id={`nav-${l.id}`}
                 href={`#${l.id}`}
-                className="text-[12px] font-normal tracking-[-0.12px] text-white/75 transition-colors hover:text-white"
+                aria-current={active === l.id ? "location" : undefined}
+                className={`relative text-[12px] font-normal tracking-[-0.12px] transition-colors hover:text-white after:absolute after:inset-x-0 after:-bottom-1.5 after:h-[1.5px] after:origin-left after:scale-x-0 after:rounded-full after:bg-[#2997ff] after:transition-transform after:duration-300 hover:after:scale-x-100 motion-reduce:after:transition-none ${
+                  active === l.id ? "text-white after:scale-x-100" : "text-white/75"
+                }`}
               >
                 {l.label}
               </a>
@@ -682,37 +1031,78 @@ function SystemTelemetryCard() {
  * ============================================================ */
 
 function Hero({ onEmailClick }) {
+  const sectionRef = useRef(null);
+
+  // Pointer position feeds the spotlight (--mx/--my) and depth parallax (--px/--py in -1..1)
+  const handlePointerMove = (e) => {
+    const el = sectionRef.current;
+    if (!el || e.pointerType !== "mouse") return;
+    const r = el.getBoundingClientRect();
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+    el.style.setProperty("--mx", `${x}px`);
+    el.style.setProperty("--my", `${y}px`);
+    el.style.setProperty("--px", ((x / r.width) * 2 - 1).toFixed(3));
+    el.style.setProperty("--py", ((y / r.height) * 2 - 1).toFixed(3));
+  };
+  const handlePointerLeave = () => {
+    const el = sectionRef.current;
+    if (!el) return;
+    el.style.setProperty("--px", "0");
+    el.style.setProperty("--py", "0");
+  };
+
   return (
-    <section id="top" className="relative overflow-hidden bg-gradient-to-b from-[#f5f5f7]/60 via-white to-white text-[#1d1d1f] pt-[44px]">
-      {/* Subtle architectural contour wave lines inspired by the reference hero */}
+    <section
+      ref={sectionRef}
+      id="top"
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
+      className="gw-hero relative overflow-hidden bg-gradient-to-b from-[#f5f5f7]/60 via-white to-white text-[#1d1d1f] pt-[44px]"
+    >
+      {/* Dotted engineering grid + cursor spotlight */}
+      <div aria-hidden="true" className="gw-hero-grid pointer-events-none absolute inset-0" />
+      <div aria-hidden="true" className="gw-hero-spot" />
+
+      {/* Contour wave lines that draw themselves in on load */}
       <svg
         aria-hidden="true"
         viewBox="0 0 1440 320"
         fill="none"
         preserveAspectRatio="none"
-        className="pointer-events-none absolute inset-x-0 bottom-[105px] h-[220px] w-full opacity-55"
+        className="pointer-events-none absolute inset-x-0 bottom-[105px] h-[220px] w-full opacity-60"
       >
         <path
           d="M-60 260 C 260 150, 560 310, 920 210 C 1180 140, 1340 60, 1500 90"
-          stroke="#d2d2d7"
+          stroke="#c7c7cc"
           strokeWidth="1.2"
+          pathLength="1"
+          className="gw-draw-path gw-draw"
+          style={{ animationDelay: "250ms" }}
         />
         <path
           d="M-60 280 C 280 175, 580 325, 940 228 C 1200 158, 1350 82, 1500 112"
-          stroke="#e5e5ea"
+          stroke="#d9d9de"
           strokeWidth="1.2"
+          pathLength="1"
+          className="gw-draw-path gw-draw"
+          style={{ animationDelay: "450ms" }}
         />
         <path
           d="M-60 300 C 300 200, 600 340, 960 246 C 1220 176, 1360 104, 1500 134"
-          stroke="#f0f0f5"
+          stroke="#2997ff"
+          strokeOpacity="0.35"
           strokeWidth="1.2"
+          pathLength="1"
+          className="gw-draw-path gw-draw"
+          style={{ animationDelay: "650ms" }}
         />
       </svg>
 
       <div className="relative mx-auto flex min-h-[92svh] max-w-[1060px] flex-col justify-between px-5 pb-12 pt-10 sm:px-6 lg:pt-14">
         <div className="grid items-end gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-10">
           {/* Left Copy Column */}
-          <div className="pb-4 lg:pb-14 pt-4">
+          <div className="gw-lift pb-4 lg:pb-14 pt-4">
             <p
               id="hero-status"
               className="gw-rise font-mono text-[12px] uppercase tracking-[0.18em] text-[#0066cc] font-semibold mb-4"
@@ -722,10 +1112,16 @@ function Hero({ onEmailClick }) {
 
             {/* Apple Hero Display: 56px, 600 weight, 1.07 line-height, -0.02em tracking */}
             <h1
-              className="gw-rise text-[38px] font-semibold leading-[1.07] tracking-[-0.02em] sm:text-[48px] lg:text-[56px] text-[#1d1d1f]"
-              style={{ animationDelay: "60ms" }}
+              className="text-[38px] font-semibold leading-[1.07] tracking-[-0.02em] sm:text-[48px] lg:text-[56px] text-[#1d1d1f]"
             >
-              Gracias Kumara Winata
+              {PROFILE.name.split(" ").map((word, i, arr) => (
+                <span key={word}>
+                  <span className="gw-word" style={{ "--i": i }}>
+                    {word}
+                  </span>
+                  {i < arr.length - 1 ? " " : ""}
+                </span>
+              ))}
             </h1>
 
             <p
@@ -758,6 +1154,7 @@ function Hero({ onEmailClick }) {
               {/* Primary Action Blue Pill Button */}
               <button
                 id="hero-cta-email"
+                data-magnetic
                 type="button"
                 onClick={onEmailClick}
                 className="rounded-full bg-[#0066cc] px-[22px] py-[11px] text-[15px] font-medium text-white transition-all hover:bg-[#0071e3] active:scale-95 shadow-sm inline-flex items-center gap-2"
@@ -787,22 +1184,49 @@ function Hero({ onEmailClick }) {
             </div>
           </div>
 
-          {/* Right Cutout Portrait Column — anchored flush to the bottom divider */}
-          <div className="relative flex justify-center lg:justify-end self-end">
+          {/* Right Cutout Portrait Column: sinks on scroll, floats with the cursor */}
+          <div className="gw-sink relative flex justify-center lg:justify-end self-end">
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 h-[80%] w-[85%] rounded-full bg-gradient-to-tr from-[#0066cc]/[0.06] via-[#f5f5f7]/80 to-transparent blur-2xl"
+              className="gw-depth pointer-events-none absolute bottom-0 left-[7.5%] right-[7.5%] h-[80%] rounded-full bg-gradient-to-tr from-[#0066cc]/[0.12] via-[#2997ff]/[0.06] to-transparent blur-3xl"
+              style={{ "--d": "-26px" }}
             />
-            <img
-              src={PROFILE.photo}
-              alt="Gracias Kumara Winata"
-              width={1082}
-              height={1264}
-              fetchPriority="high"
-              decoding="async"
-              className="gw-rise relative z-10 block w-full max-w-[320px] sm:max-w-[380px] lg:max-w-[440px] aspect-[1082/1264] h-auto object-contain object-bottom select-none drop-shadow-[0_18px_38px_rgba(0,0,0,0.12)]"
-              style={{ animationDelay: "140ms" }}
-            />
+            <div className="relative z-10 w-full max-w-[320px] sm:max-w-[380px] lg:max-w-[440px]">
+              <div className="gw-depth" style={{ "--d": "8px" }}>
+                <img
+                  src={PROFILE.photo}
+                  alt="Gracias Kumara Winata"
+                  width={1082}
+                  height={1264}
+                  fetchPriority="high"
+                  decoding="async"
+                  className="gw-rise block w-full aspect-[1082/1264] h-auto object-contain object-bottom select-none drop-shadow-[0_18px_38px_rgba(0,0,0,0.12)]"
+                  style={{ animationDelay: "140ms" }}
+                />
+              </div>
+
+              {HERO_CHIPS.map(({ icon: Icon, label, value, pos, d, delay }) => (
+                <div
+                  key={label}
+                  aria-hidden="true"
+                  className={`gw-depth absolute z-20 hidden sm:block ${pos}`}
+                  style={{ "--d": d }}
+                >
+                  <div
+                    className="gw-pop flex items-center gap-2.5 rounded-2xl bg-white/85 px-3 py-2 shadow-[0_10px_30px_rgba(0,0,0,0.10)] ring-1 ring-black/[0.06] backdrop-blur-md"
+                    style={{ animationDelay: delay }}
+                  >
+                    <span className="grid h-7 w-7 place-items-center rounded-lg bg-[#0066cc]/10 text-[#0066cc]">
+                      <Icon className="h-3.5 w-3.5" />
+                    </span>
+                    <span className="leading-tight">
+                      <span className="block font-mono text-[10px] uppercase tracking-wider text-[#7a7a7a]">{label}</span>
+                      <span className="block text-[13px] font-semibold text-[#1d1d1f]">{value}</span>
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -817,7 +1241,7 @@ function Hero({ onEmailClick }) {
             >
               <dt className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#7a7a7a] font-medium">{s.k}</dt>
               <dd className="mt-1 text-[26px] font-semibold text-[#1d1d1f] tracking-tight sm:text-[30px]">
-                <span className="font-mono">{s.v}</span>{" "}
+                <CountUp value={s.v} className="font-mono" />{" "}
                 <span className="font-mono text-[12px] font-normal text-[#7a7a7a]">{s.sub}</span>
               </dd>
             </div>
@@ -847,13 +1271,13 @@ function About({ onEmailClick }) {
             <h2 className="text-[32px] font-semibold leading-[1.10] tracking-[-0.02em] sm:text-[40px] text-[#1d1d1f]">
               Theory in.
               <br />
-              <span className="bg-gradient-to-r from-[#0066cc] to-[#2997ff] bg-clip-text text-transparent">
+              <span className="gw-shimmer">
                 Low-latency systems out.
               </span>
             </h2>
 
             {/* Crisp White 18px rounded utility card */}
-            <div className="mt-8 flex items-start gap-4 rounded-[18px] bg-white p-6 shadow-sm apple-card-ring border border-black/[0.04]">
+            <div className="gw-spot mt-8 flex items-start gap-4 rounded-[18px] bg-white p-6 shadow-sm apple-card-ring border border-black/[0.04] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#f5f5f7] text-[#0066cc]">
                 <GraduationCap className="h-5 w-5" />
               </span>
@@ -875,7 +1299,7 @@ function About({ onEmailClick }) {
         </div>
 
         {/* High-Contrast Apple Store Highlight Card: Currently Seeking Internship */}
-        <div className="reveal mt-14 overflow-hidden rounded-[18px] bg-[#1d1d1f] text-white p-7 sm:p-8 shadow-xl">
+        <div className="reveal gw-spot gw-spot-dark mt-14 overflow-hidden rounded-[18px] bg-[#1d1d1f] text-white p-7 sm:p-8 shadow-xl">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
@@ -893,23 +1317,26 @@ function About({ onEmailClick }) {
             </div>
             <button
               id="about-cta-email"
+              data-magnetic
               type="button"
               onClick={onEmailClick}
-              className="shrink-0 rounded-full bg-[#0066cc] px-[22px] py-[11px] text-[15px] font-medium text-white hover:bg-[#0071e3] active:scale-95 transition-all shadow-md inline-flex items-center gap-1.5"
+              className="group shrink-0 rounded-full bg-[#0066cc] px-[22px] py-[11px] text-[15px] font-medium text-white hover:bg-[#0071e3] active:scale-95 shadow-md inline-flex items-center gap-1.5"
             >
-              Let&apos;s Connect <ArrowUpRight className="h-4 w-4" />
+              Let&apos;s Connect{" "}
+              <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </button>
           </div>
         </div>
 
         {/* 4 Core Philosophy Cards (Pure White, 18px radius, padding: 28px, Action Blue icons, zero harsh borders) */}
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {PRINCIPLES.map(({ icon: Icon, title, body }) => (
+          {PRINCIPLES.map(({ icon: Icon, title, body }, idx) => (
             <div
               key={title}
-              className="reveal rounded-[18px] bg-white p-[28px] shadow-sm apple-card-ring border border-black/[0.04] transition-all hover:-translate-y-0.5"
+              style={{ "--i": idx }}
+              className="reveal gw-stagger gw-spot group rounded-[18px] bg-white p-[28px] shadow-sm apple-card-ring border border-black/[0.04] transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
             >
-              <Icon className="h-6 w-6 text-[#0066cc]" />
+              <Icon className="h-6 w-6 text-[#0066cc] transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3" />
               <p className="mt-4 text-[17px] font-semibold tracking-tight text-[#1d1d1f]">{title}</p>
               <p className="mt-2 text-[14px] leading-[1.47] text-[#7a7a7a]">{body}</p>
             </div>
@@ -947,7 +1374,7 @@ function ProjectShot({ project, onOpenLightbox }) {
   };
 
   return (
-    <figure className="relative w-full">
+    <figure className="gw-shot relative w-full">
       {/* Signature Apple product shadow from DESIGN.md: box-shadow: 3px 5px 30px 0px rgba(0, 0, 0, 0.22); border-radius: 12px */}
       <div className="apple-product-shadow rounded-[12px] overflow-hidden bg-black/40 transition-transform duration-300 hover:scale-[1.01]">
         {/* Multi-image switcher tabs if > 1 */}
@@ -973,23 +1400,33 @@ function ProjectShot({ project, onOpenLightbox }) {
           </div>
         )}
 
-        {/* Screenshot viewport with zoom overlay */}
-        <div
-          onClick={() => onOpenLightbox(images, currentIdx, project.title)}
-          className={`relative overflow-hidden cursor-pointer ${project.frameClass}`}
-        >
-          <img
-            src={imgSrc}
-            alt={`${project.title} - ${activeImage.label || project.subtitle}`}
-            loading="lazy"
-            decoding="async"
-            onError={() => {
-              if (activeImage.fallback && imgSrc !== activeImage.fallback) {
-                setImgSrc(activeImage.fallback);
-              }
-            }}
-            className={`h-full w-full ${project.imgClass} transition-opacity duration-300`}
-          />
+        {/* Screenshot viewport with keyboard-accessible zoom button */}
+        <div className={`group relative overflow-hidden ${project.frameClass}`}>
+          <button
+            type="button"
+            onClick={() => onOpenLightbox(images, currentIdx, project.title)}
+            aria-label={`Zoom ${project.title} - ${activeImage.label || project.subtitle}`}
+            className="block h-full w-full cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#2997ff]"
+          >
+            <img
+              src={imgSrc}
+              alt={`${project.title} - ${activeImage.label || project.subtitle}`}
+              loading="lazy"
+              decoding="async"
+              onError={() => {
+                if (activeImage.fallback && imgSrc !== activeImage.fallback) {
+                  setImgSrc(activeImage.fallback);
+                }
+              }}
+              className={`h-full w-full ${project.imgClass} transition-transform duration-500 ease-out group-hover:scale-[1.02]`}
+            />
+
+            <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-200 group-hover:bg-black/25 group-hover:opacity-100 group-focus-within:bg-black/25 group-focus-within:opacity-100">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-black/80 px-4 py-1.5 text-[12px] font-medium text-white shadow-lg backdrop-blur transition-transform duration-200 scale-95 group-hover:scale-100 group-focus-within:scale-100">
+                <Maximize2 className="h-3.5 w-3.5 text-[#2997ff]" /> Click to zoom
+              </span>
+            </span>
+          </button>
 
           {images.length > 1 && (
             <>
@@ -997,7 +1434,7 @@ function ProjectShot({ project, onOpenLightbox }) {
                 type="button"
                 onClick={handlePrev}
                 aria-label="Previous screenshot"
-                className="absolute left-3 top-1/2 -translate-y-1/2 z-10 grid h-8 w-8 place-items-center rounded-full bg-black/70 text-white hover:bg-black/90 backdrop-blur transition-all"
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-10 grid h-8 w-8 place-items-center rounded-full bg-black/70 text-white hover:bg-black/90 active:scale-95 backdrop-blur transition-all"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
@@ -1005,18 +1442,12 @@ function ProjectShot({ project, onOpenLightbox }) {
                 type="button"
                 onClick={handleNext}
                 aria-label="Next screenshot"
-                className="absolute right-3 top-1/2 -translate-y-1/2 z-10 grid h-8 w-8 place-items-center rounded-full bg-black/70 text-white hover:bg-black/90 backdrop-blur transition-all"
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-10 grid h-8 w-8 place-items-center rounded-full bg-black/70 text-white hover:bg-black/90 active:scale-95 backdrop-blur transition-all"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
             </>
           )}
-
-          <div className="absolute inset-0 bg-black/0 hover:bg-black/25 transition-colors flex items-center justify-center opacity-0 hover:opacity-100 pointer-events-none">
-            <span className="rounded-full bg-black/80 px-4 py-1.5 text-[12px] font-medium text-white backdrop-blur flex items-center gap-1.5 shadow-lg">
-              <Maximize2 className="h-3.5 w-3.5 text-[#2997ff]" /> Click to zoom
-            </span>
-          </div>
         </div>
       </div>
 
@@ -1037,20 +1468,20 @@ function ProjectShot({ project, onOpenLightbox }) {
 
 function PipelineSchematic({ steps, isDark }) {
   return (
-    <div className="flex flex-wrap items-center gap-1.5 font-mono text-[11px]" aria-label="Pipeline Architecture">
+    <div className="gw-pipe flex flex-wrap items-center gap-1.5 font-mono text-[11px]" aria-label="Pipeline Architecture">
       {steps.map((s, idx) => (
-        <span key={s} className="inline-flex items-center gap-1.5">
+        <span key={s} style={{ "--i": idx }} className="gw-node inline-flex items-center gap-1.5">
           <span
-            className={`rounded-md px-2.5 py-1 font-mono text-[11.5px] font-medium ${
+            className={`rounded-md px-2.5 py-1 font-mono text-[11.5px] font-medium transition-colors duration-200 ${
               isDark
-                ? "bg-white/10 text-white/90 border border-white/10"
-                : "bg-white text-[#1d1d1f] shadow-sm border border-black/[0.06]"
+                ? "bg-white/10 text-white/90 border border-white/10 hover:border-[#2997ff]/60 hover:bg-white/15"
+                : "bg-white text-[#1d1d1f] shadow-sm border border-black/[0.06] hover:border-[#0066cc]/40"
             }`}
           >
             {s}
           </span>
           {idx < steps.length - 1 && (
-            <span className={`font-mono select-none text-[10.5px] ${isDark ? "text-white/40" : "text-black/35"}`}>
+            <span className={`gw-arrow font-mono select-none text-[10.5px] ${isDark ? "text-white/40" : "text-black/35"}`}>
               ──►
             </span>
           )}
@@ -1070,9 +1501,18 @@ function ProjectTile({ project, onOpenLightbox }) {
   return (
     <article
       id={`project-${project.id}`}
-      className={`${project.bg} ${project.textMain} py-24 sm:py-32 transition-colors`}
+      className={`relative overflow-clip ${project.bg} ${project.textMain} py-24 sm:py-32 transition-colors`}
     >
-      <div className="mx-auto grid max-w-[1020px] items-center gap-12 px-5 sm:px-6 lg:grid-cols-12 lg:gap-14">
+      {/* Parallax architectural index watermark (overflow-clip preserves root view() timeline) */}
+      <span
+        aria-hidden="true"
+        className="gw-watermark pointer-events-none select-none absolute right-8 top-8 hidden font-mono text-[190px] font-bold leading-none lg:block"
+        style={{ "--wm": isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.055)" }}
+      >
+        {project.index}
+      </span>
+
+      <div className="relative z-10 mx-auto grid max-w-[1020px] items-center gap-12 px-5 sm:px-6 lg:grid-cols-12 lg:gap-14">
         {/* Left Column: 5 Cols for Specs & Engineering Details */}
         <div className="reveal lg:col-span-5 flex flex-col justify-between">
           <div>
@@ -1106,7 +1546,7 @@ function ProjectTile({ project, onOpenLightbox }) {
                 {project.metrics.map((m) => (
                   <div key={m.l} className="px-3 first:pl-0 last:pr-0">
                     <dd className="font-mono text-[20px] font-semibold tracking-tight">
-                      {m.v}
+                      <CountUp value={m.v} />
                     </dd>
                     <dt className={`font-mono text-[10.5px] uppercase tracking-wider mt-0.5 ${project.textMuted}`}>
                       {m.l}
@@ -1132,20 +1572,21 @@ function ProjectTile({ project, onOpenLightbox }) {
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <a
               id={`project-${project.id}-repo`}
+              data-magnetic
               href={project.repo}
               target="_blank"
               rel="noreferrer"
-              className="rounded-full bg-[#0066cc] hover:bg-[#0071e3] text-white px-[22px] py-[11px] text-[14px] font-medium transition-all active:scale-95 shadow-sm inline-flex items-center gap-2"
+              className="group rounded-full bg-[#0066cc] hover:bg-[#0071e3] text-white px-[22px] py-[11px] text-[14px] font-medium active:scale-95 shadow-sm inline-flex items-center gap-2"
             >
               <GithubIcon className="h-4 w-4" />
               <span>{project.repoLabel}</span>
-              <ArrowUpRight className="h-3.5 w-3.5 opacity-80" />
+              <ArrowUpRight className="h-3.5 w-3.5 opacity-80 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </a>
           </div>
         </div>
 
         {/* Right Column: 7 Cols for Visual with Signature Apple Product Shadow */}
-        <div className="reveal lg:col-span-7">
+        <div className="lg:col-span-7">
           <ProjectShot project={project} onOpenLightbox={onOpenLightbox} />
         </div>
       </div>
@@ -1220,6 +1661,44 @@ function SkillPill({ name, detail, target }) {
   );
 }
 
+function TechMarquee() {
+  const [paused, setPaused] = useState(false);
+
+  const renderTrack = (hidden = false) => (
+    <ul
+      aria-hidden={hidden || undefined}
+      className="flex shrink-0 items-center gap-6 pr-6 font-mono text-[12px] uppercase tracking-[0.14em] text-[#55555a]"
+    >
+      {TECH_MARQUEE.map((tech) => (
+        <li key={tech} className="inline-flex items-center gap-6 whitespace-nowrap">
+          <span>{tech}</span>
+          <span aria-hidden="true" className="h-1 w-1 rounded-full bg-[#0066cc]/45" />
+        </li>
+      ))}
+    </ul>
+  );
+
+  return (
+    <div className="mt-10 flex items-center gap-3">
+      <div className="gw-marquee-mask relative flex-1 overflow-hidden py-2">
+        <div className={`gw-marquee-track flex w-max ${paused ? "is-paused" : ""}`}>
+          {renderTrack(false)}
+          {renderTrack(true)}
+        </div>
+      </div>
+      <button
+        type="button"
+        onClick={() => setPaused((p) => !p)}
+        aria-label={paused ? "Play technology marquee" : "Pause technology marquee"}
+        title={paused ? "Play ticker" : "Pause ticker"}
+        className="gw-marquee-btn grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white text-[#1d1d1f] shadow-sm apple-card-ring border border-black/[0.06] transition-all hover:text-[#0066cc] active:scale-95"
+      >
+        {paused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
+      </button>
+    </div>
+  );
+}
+
 function Stack() {
   return (
     <section id="stack" className="bg-[#f5f5f7] text-[#1d1d1f] py-24 sm:py-32">
@@ -1230,7 +1709,7 @@ function Stack() {
               03 / TECH STACK & SKILLS
             </p>
             <h2 className="text-[32px] font-semibold leading-[1.10] tracking-[-0.02em] sm:text-[40px] text-[#1d1d1f]">
-              From signal to <span className="text-[#0066cc]">shipped</span>
+              From signal to <span className="gw-shimmer">shipped</span>
             </h2>
           </div>
           <p className="max-w-[440px] text-[15px] leading-[1.5] text-[#7a7a7a]">
@@ -1238,16 +1717,19 @@ function Stack() {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-6 lg:grid-cols-3">
-          {SKILL_GROUPS.map(({ id, icon: Icon, path, title, items }) => (
+        <TechMarquee />
+
+        <div className="mt-10 grid gap-6 lg:grid-cols-3">
+          {SKILL_GROUPS.map(({ id, icon: Icon, path, title, items }, groupIdx) => (
             <article
               key={id}
               id={`stack-${id}`}
-              className="reveal flex flex-col justify-between rounded-[18px] bg-white p-7 shadow-sm apple-card-ring border border-black/[0.04] transition-all hover:-translate-y-0.5"
+              style={{ "--i": groupIdx }}
+              className="reveal gw-stagger gw-spot group flex flex-col justify-between rounded-[18px] bg-white p-7 shadow-sm apple-card-ring border border-black/[0.04] transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#f5f5f7] text-[#0066cc]">
+                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#f5f5f7] text-[#0066cc] transition-transform duration-300 group-hover:scale-110">
                     <Icon className="h-5 w-5" />
                   </span>
                   <span className="font-mono text-[11.5px] text-[#7a7a7a] font-medium">{items.length} tools</span>
@@ -1255,8 +1737,8 @@ function Stack() {
                 <p className="font-mono mt-4 text-[11.5px] text-[#0066cc] font-medium">{path}</p>
                 <h3 className="mt-1 text-[19px] font-semibold tracking-tight text-[#1d1d1f]">{title}</h3>
                 <ul className="mt-5 flex flex-wrap gap-2">
-                  {items.map((it) => (
-                    <li key={it.name}>
+                  {items.map((it, pillIdx) => (
+                    <li key={it.name} style={{ "--i": pillIdx }} className="gw-pill-in">
                       <SkillPill {...it} />
                     </li>
                   ))}
@@ -1284,7 +1766,7 @@ function Contact({ onEmailClick, onCopyEmail }) {
           </p>
           <h2 className="mx-auto max-w-[800px] text-[34px] font-semibold leading-[1.08] tracking-[-0.02em] sm:text-[50px] text-[#1d1d1f]">
             Let&apos;s build something{" "}
-            <span className="bg-gradient-to-r from-[#0066cc] to-[#2997ff] bg-clip-text text-transparent">
+            <span className="gw-shimmer">
               low-latency
             </span>
           </h2>
@@ -1295,9 +1777,10 @@ function Contact({ onEmailClick, onCopyEmail }) {
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3.5">
             <button
               id="contact-cta-email"
+              data-magnetic
               type="button"
               onClick={onEmailClick}
-              className="rounded-full bg-[#0066cc] px-7 py-3 text-[15px] font-medium text-white transition-all hover:bg-[#0071e3] active:scale-95 shadow-md inline-flex items-center gap-2"
+              className="rounded-full bg-[#0066cc] px-7 py-3 text-[15px] font-medium text-white hover:bg-[#0071e3] active:scale-95 shadow-md inline-flex items-center gap-2"
             >
               <Mail className="h-4 w-4" /> Email Me (Direct)
             </button>
@@ -1316,16 +1799,17 @@ function Contact({ onEmailClick, onCopyEmail }) {
           <button
             type="button"
             onClick={onEmailClick}
-            className="reveal group flex items-center gap-4 rounded-[18px] bg-[#f5f5f7] p-5 transition-all hover:bg-white apple-card-ring border border-black/[0.04] text-left"
+            style={{ "--i": 0 }}
+            className="reveal gw-stagger gw-spot group flex items-center gap-4 rounded-[18px] bg-[#f5f5f7] p-5 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-md apple-card-ring border border-black/[0.04] text-left"
           >
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-[#0066cc] shadow-sm transition-colors group-hover:bg-[#0066cc] group-hover:text-white">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-[#0066cc] shadow-sm transition-all duration-200 group-hover:scale-105 group-hover:bg-[#0066cc] group-hover:text-white">
               <Mail className="h-4 w-4" />
             </span>
             <span className="min-w-0">
               <span className="block text-[14px] font-semibold text-[#1d1d1f]">Email</span>
               <span className="font-mono block truncate text-[12px] text-[#7a7a7a]">{PROFILE.email}</span>
             </span>
-            <ArrowUpRight className="ml-auto h-4 w-4 shrink-0 text-[#7a7a7a] group-hover:text-[#0066cc]" />
+            <ArrowUpRight className="ml-auto h-4 w-4 shrink-0 text-[#7a7a7a] transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#0066cc]" />
           </button>
 
           <a
@@ -1333,16 +1817,17 @@ function Contact({ onEmailClick, onCopyEmail }) {
             href={PROFILE.github}
             target="_blank"
             rel="noreferrer"
-            className="reveal group flex items-center gap-4 rounded-[18px] bg-[#f5f5f7] p-5 transition-all hover:bg-white apple-card-ring border border-black/[0.04]"
+            style={{ "--i": 1 }}
+            className="reveal gw-stagger gw-spot group flex items-center gap-4 rounded-[18px] bg-[#f5f5f7] p-5 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-md apple-card-ring border border-black/[0.04]"
           >
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-[#0066cc] shadow-sm transition-colors group-hover:bg-[#0066cc] group-hover:text-white">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-[#0066cc] shadow-sm transition-all duration-200 group-hover:scale-105 group-hover:bg-[#0066cc] group-hover:text-white">
               <GithubIcon className="h-4 w-4" />
             </span>
             <span className="min-w-0">
               <span className="block text-[14px] font-semibold text-[#1d1d1f]">GitHub</span>
               <span className="font-mono block truncate text-[12px] text-[#7a7a7a]">{PROFILE.githubLabel}</span>
             </span>
-            <ArrowUpRight className="ml-auto h-4 w-4 shrink-0 text-[#7a7a7a] group-hover:text-[#0066cc]" />
+            <ArrowUpRight className="ml-auto h-4 w-4 shrink-0 text-[#7a7a7a] transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#0066cc]" />
           </a>
 
           <a
@@ -1350,16 +1835,17 @@ function Contact({ onEmailClick, onCopyEmail }) {
             href={PROFILE.linkedin}
             target="_blank"
             rel="noreferrer"
-            className="reveal group flex items-center gap-4 rounded-[18px] bg-[#f5f5f7] p-5 transition-all hover:bg-white apple-card-ring border border-black/[0.04]"
+            style={{ "--i": 2 }}
+            className="reveal gw-stagger gw-spot group flex items-center gap-4 rounded-[18px] bg-[#f5f5f7] p-5 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-md apple-card-ring border border-black/[0.04]"
           >
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-[#0066cc] shadow-sm transition-colors group-hover:bg-[#0066cc] group-hover:text-white">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-[#0066cc] shadow-sm transition-all duration-200 group-hover:scale-105 group-hover:bg-[#0066cc] group-hover:text-white">
               <LinkedinIcon className="h-4 w-4" />
             </span>
             <span className="min-w-0">
               <span className="block text-[14px] font-semibold text-[#1d1d1f]">LinkedIn</span>
               <span className="font-mono block truncate text-[12px] text-[#7a7a7a]">{PROFILE.linkedinLabel}</span>
             </span>
-            <ArrowUpRight className="ml-auto h-4 w-4 shrink-0 text-[#7a7a7a] group-hover:text-[#0066cc]" />
+            <ArrowUpRight className="ml-auto h-4 w-4 shrink-0 text-[#7a7a7a] transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#0066cc]" />
           </a>
         </div>
       </div>
@@ -1503,7 +1989,8 @@ function Lightbox({ images, initialIndex = 0, title, onClose }) {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative max-h-[94vh] max-w-[94vw] overflow-hidden rounded-[18px] bg-[#1d1d1f] p-4 shadow-2xl flex flex-col border border-white/10"
+        style={{ animationDuration: "320ms" }}
+        className="gw-pop relative max-h-[94vh] max-w-[94vw] overflow-hidden rounded-[18px] bg-[#1d1d1f] p-4 shadow-2xl flex flex-col border border-white/10"
       >
         <div className="flex items-center justify-between border-b border-white/10 pb-3 px-2 text-white">
           <div className="flex items-center gap-2.5 min-w-0">
@@ -1591,7 +2078,8 @@ function Toast({ message, onClose }) {
   return (
     <div
       role="status"
-      className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-full bg-[#1d1d1f] px-5 py-3 text-[13.5px] font-medium text-white shadow-2xl border border-white/15 animate-in fade-in slide-in-from-bottom-2 duration-200"
+      style={{ animationDuration: "320ms" }}
+      className="gw-pop fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-full bg-[#1d1d1f] px-5 py-3 text-[13.5px] font-medium text-white shadow-2xl border border-white/15"
     >
       <Check className="h-4 w-4 text-emerald-400 shrink-0" />
       <span>{message}</span>
@@ -1608,6 +2096,7 @@ function Toast({ message, onClose }) {
 
 export default function Portfolio() {
   useRevealFallback();
+  usePointerEffects();
   const [lightbox, setLightbox] = useState({ open: false, images: [], initialIndex: 0, title: "" });
   const [toastMessage, setToastMessage] = useState("");
   const toastTimer = useRef();
